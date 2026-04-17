@@ -69,8 +69,11 @@ After that, the project can expand into the full authenticated lesson platform a
 ## V1 schema decisions
 
 The recommended v1 data model uses two Supabase tables: `up_waitlist_entries` as the main funnel record and `up_stripe_webhook_events` for idempotent Stripe webhook processing and audit.
+The model is one row per normalized email, not one row per real-world person.
 The v1 matching rule treats an email match as an exact match on `email_normalized = lower(trim(email))`, which preserves the no-auto-merge rule while avoiding case and whitespace duplicates.
+In this schema, `waitlist_tier` means granted state, not checkout intent, so a pending VIP checkout keeps `waitlist_tier = 'free'` until Stripe confirms payment.
 The main row tracks `waitlist_tier`, `payment_status`, `pdf_fulfillment_status`, Stripe ids, VIP payment timing, the latest PDF fulfillment error, and a fulfillment-attempt count.
+The payment success page and PDF delivery are separate steps in v1: successful payment moves the row to `pdf_fulfillment_status = 'pending'`, and PDF sending completes asynchronously afterward.
 For v1, PDF retry history stays on the main row instead of using a separate fulfillment-attempt log table.
 
 ## Recommended execution sequence
