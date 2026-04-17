@@ -42,7 +42,7 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - Real Discord file attachments work when sent through the `message` tool with a `filePath` (and usually a `filename`).
 - `MEDIA:...` lines in a normal assistant reply are only a fallback hint, not a true Discord upload, and may fail to appear as attachments.
 - For sending files back to Lionel on Discord, prefer the real send path over reply-inline media hints.
-- For Discord code or migration review, send the actual source files as file attachments instead of fragmented inline code blocks.
+- For Discord code or migration review, use actual source files as file attachments. Do not fragment code into inline Discord posts.
 - When a reviewer asks for files one at a time, send one complete file per message in the requested order.
 - If Discord blocks a `.js` attachment, resend it with `.html` appended to the filename and explicitly say it contains code content, not actual HTML.
 - MusicalBasics server default channel for shared posts is `#general` (`guild_id: 1492055285240692866`, `channel_id: 1492055285240692869`) unless Lionel says otherwise.
