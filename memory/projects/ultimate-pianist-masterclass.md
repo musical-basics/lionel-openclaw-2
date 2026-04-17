@@ -103,6 +103,8 @@ Admin retry in v1 is limited to VIP-paid rows still in `pending` or already `fai
 
 On 2026-04-17, Openclaw Commander ended the scaffolding phase and moved implementation to the first highest-leverage slice: the Supabase migration for the approved v1 schema.
 That migration lives at `supabase/migrations/20260417210000_ultimate_pianist_v1_schema.sql` and creates `up_waitlist_entries`, `up_stripe_webhook_events`, the required unique and admin indexes, and the shared `public.set_updated_at()` trigger function plus `up_waitlist_entries_set_updated_at` trigger.
+The next approved implementation slice adds the free waitlist server path: `app/api/waitlist/free/route.js`, `lib/supabase/admin.js`, `lib/ultimate-pianist/free-waitlist.js`, and `supabase/migrations/20260417211000_add_free_waitlist_signup_rpc.sql`.
+That slice uses a server-only Supabase admin client, validates and normalizes `name`, `email`, and `source`, applies a basic best-effort in-memory limit of 5 requests per minute per IP, and writes through `public.upsert_up_free_waitlist_entry()` so duplicate free signups preserve first-touch `source` while updating only `name` and `updated_at`.
 
 ## Recommended execution sequence
 
