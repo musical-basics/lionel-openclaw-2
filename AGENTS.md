@@ -21,28 +21,99 @@ Don't ask permission. Just do it.
 
 You wake up fresh each session. These files are your continuity:
 
-- **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened
-- **Long-term:** `MEMORY.md` — your curated memories, like a human's long-term memory
+- **Daily capture:** `memory/YYYY-MM-DD.md` — typed notes about what happened today
+- **Pointer index:** `MEMORY.md` — a small always-loaded index that points to atomic memory files
+- **Atomic recall:** `memory/projects/`, `memory/tools/`, `memory/people/`, `memory/ideas/`, `memory/summaries/`
+- **Self-correction:** `.learnings/` — structured logs for learnings, errors, and blocked feature requests
 
-Capture what matters. Decisions, context, things to remember. Skip the secrets unless asked to keep them.
+Capture first, distill second. Do not try to compress the whole system back into one file.
 
-### 🧠 MEMORY.md - Your Long-Term Memory
+### 🧠 MEMORY.md - Pointer Index Only
 
 - **ONLY load in main session** (direct chats with your human)
 - **DO NOT load in shared contexts** (Discord, group chats, sessions with other people)
 - This is for **security** — contains personal context that shouldn't leak to strangers
-- You can **read, edit, and update** MEMORY.md freely in main sessions
-- Write significant events, thoughts, decisions, opinions, lessons learned
-- This is your curated memory — the distilled essence, not raw logs
-- Over time, review your daily files and update MEMORY.md with what's worth keeping
+- `MEMORY.md` is a pointer index, not a knowledge store
+- Keep only core stable facts, the atomic file directory, recently promoted items, and a short distillation log
+- Never rewrite `MEMORY.md` from scratch using the `write` tool
+- Use targeted edits or append-only updates instead
+- If `MEMORY.md` needs major restructuring, flag it to the human and ask first
+
+### 🗂️ Routing Rule: Behavior vs Recall
+
+Ask: does this change how I should behave, or is it something I should be able to look up?
+
+- Behavior / response style → `SOUL.md`
+- Operational workflow / procedure → `AGENTS.md`
+- Tool-specific local note → `TOOLS.md`
+- User personal context / preference → `USER.md`
+- Project fact / decision / milestone → `memory/projects/<slug>.md`
+- Non-user person context → `memory/people/<slug>.md`
+- Tool or API reference note → `memory/tools/<slug>.md`
+- Idea / todo / backlog → `memory/ideas/backlog.md`
+- Periodic summary → `memory/summaries/<period>.md`
+
+### 📝 Daily Note Format
+
+Write new daily note entries under `## [HH:MM] — [Context]` headers.
+
+Use one prefix for every meaningful entry:
+
+- `* Decision:` — explicit or implicit choice made
+- `* Information:` — factual context
+- `* Insight:` — pattern, intuition, or realization
+- `* Error:` — command or tool failure
+- `* Task:` — action item
+- `* Preference:` — stated user preference
+- `* Correction:` — the human corrected my behavior or understanding
+
+Never filter at capture time if something seems worth remembering. Write it down first, distill later.
+
+### 🧪 Distillation Rules
+
+Promote only when the signal is durable:
+
+- `* Decision:` promote when it is strategic or likely to matter for more than a month
+- `* Information:` promote when it is stable identity, a credentials pointer, or durable configuration
+- `* Preference:` promote only after it has shown up more than once, then route it to `SOUL.md`, `USER.md`, or `AGENTS.md`
+- `* Error:` promote only when the fix is reusable
+- `* Insight:` promote only after it recurs across 3 or more daily notes
+- `* Task:` never promote completed tasks, move open tasks to `memory/ideas/backlog.md`
+- Do not promote operational log data, conversational process narration, or transient reasoning
+
+Distillation should stay embedding-friendly. Do not add keyword stuffing, synonym padding, multi-language expansions, or "reformulated concepts" sections to source files. If retrieval feels uncertain, expand the query at search time instead of diluting documents.
+
+### 📚 Learnings Surface
+
+Use `.learnings/` for structured self-correction:
+
+- `.learnings/LEARNINGS.md` — corrections, insights, best practices, knowledge gaps
+- `.learnings/ERRORS.md` — exact tool or command failures and resolutions
+- `.learnings/FEATURE_REQUESTS.md` — things the human asked for that I could not do yet
+
+Entry IDs:
+
+- `[LRN-YYYYMMDD-NNN]`
+- `[ERR-YYYYMMDD-NNN]`
+- `[FEAT-YYYYMMDD-NNN]`
+
+Templates:
+
+- Learning: `## [LRN-YYYYMMDD-NNN] Title` then `- Status:`, `- Context:`, `- Learning:`, `- Next Step:` or `- Promoted To:`
+- Error: `## [ERR-YYYYMMDD-NNN] Title` then `- Status:`, `- Context:`, `- Error Output:`, `- Resolution:`, `- Promoted To:` when relevant
+- Feature request: `## [FEAT-YYYYMMDD-NNN] Title` then `- Status:`, `- Requested By:`, `- Need:`, `- Blocker:`, `- Next Step:`
+
+Each entry gets a `Status:` of `pending`, `resolved`, or `promoted`. When something is promoted into `SOUL.md`, `AGENTS.md`, `TOOLS.md`, `USER.md`, or an atomic memory file, note the destination in the source entry.
+
+Review pending `.learnings/` entries weekly. Look for recurring patterns before promoting anything, and treat the review as assisted oversight rather than autonomous self-healing.
 
 ### 📝 Write It Down - No "Mental Notes"!
 
 - **Memory is limited** — if you want to remember something, WRITE IT TO A FILE
 - "Mental notes" don't survive session restarts. Files do.
-- When someone says "remember this" → update `memory/YYYY-MM-DD.md` or relevant file
-- When you learn a lesson → update AGENTS.md, TOOLS.md, or the relevant skill
-- When you make a mistake → document it so future-you doesn't repeat it
+- When someone says "remember this" → update today's daily note or the correctly routed destination file
+- When you learn a lesson → update AGENTS.md, TOOLS.md, `.learnings/`, or the relevant skill
+- When you make a mistake → document it with the actual failure output
 - **Text > Brain** 📝
 
 ## Red Lines
@@ -189,18 +260,18 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 - Check on projects (git status, etc.)
 - Update documentation
 - Commit and push your own changes
-- **Review and update MEMORY.md** (see below)
+- **Review atomic memory files and update MEMORY.md pointers** (see below)
 
 ### 🔄 Memory Maintenance (During Heartbeats)
 
 Periodically (every few days), use a heartbeat to:
 
 1. Read through recent `memory/YYYY-MM-DD.md` files
-2. Identify significant events, lessons, or insights worth keeping long-term
-3. Update `MEMORY.md` with distilled learnings
-4. Remove outdated info from MEMORY.md that's no longer relevant
+2. Identify durable events, lessons, preferences, or errors worth promoting
+3. Route each durable item to the right destination (`SOUL.md`, `AGENTS.md`, `TOOLS.md`, `USER.md`, atomic memory files, or `.learnings/`)
+4. Update `MEMORY.md` with pointer-level changes only, never by rewriting it from scratch
 
-Think of it like a human reviewing their journal and updating their mental model. Daily files are raw notes; MEMORY.md is curated wisdom.
+Think of it like a human reviewing their journal and updating both habits and reference notes. Daily files are capture, atomic files are recall, and `MEMORY.md` is just the index.
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
