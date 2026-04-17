@@ -91,6 +91,15 @@ That automatic create path can produce parallel rows for one human if different 
 Webhook payment success updates the row to `waitlist_tier = 'vip'`, `payment_status = 'paid'`, and `pdf_fulfillment_status = 'pending'` without sending the PDF synchronously, while non-success or unrelated verified events are recorded and ignored in v1.
 For v1, `vip_paid_at` uses the Stripe event timestamp rather than local processing time.
 If a verified webhook row is recorded but apply logic fails, the handler marks that webhook row `failed` and returns `500` so Stripe retries; later deliveries of the same `stripe_event_id` retry only previously `failed` rows, while finalized `applied` and `ignored` rows short-circuit safely.
+The Step 5 webhook spec was approved and pinned by Openclaw Commander on 2026-04-17.
+
+The Step 6 PDF-fulfillment implementation is defined as a server-side worker that processes rows only after they become `waitlist_tier = 'vip'`, `payment_status = 'paid'`, and `pdf_fulfillment_status = 'pending'`.
+The recommended v1 entrypoint is `POST /api/internal/ultimate-pianist/fulfill-pdf`, invoked by a scheduled server-side job and reusable for targeted admin retry.
+The DreamPlay Email API request should be fully server-owned, include the canonical recipient email, the Easy Moonlight Sonata Nightmare PDF attachment, and a stable per-row idempotency key `ultimate_pianist_v1_pdf:${waitlist_entry_id}` to suppress duplicate sends across retries or crash recovery.
+On accepted provider success, fulfillment writes `pdf_fulfillment_status = 'sent'`, `pdf_sent_at = now()`, clears `pdf_last_error`, and increments `pdf_fulfillment_attempt_count` without touching VIP or payment fields.
+Retryable email-delivery failures such as timeout, `429`, or `5xx` keep the row `pending`, update `pdf_last_attempt_at`, store a short internal error, and increment the attempt count; v1 then retries after 5 minutes and 30 minutes before promoting the row to `failed` after the third retryable failure.
+Terminal email-delivery failures such as missing canonical email, missing PDF asset, malformed request, or provider `4xx` rejection set `pdf_fulfillment_status = 'failed'` immediately while preserving VIP-paid state.
+Admin retry in v1 is limited to VIP-paid rows still in `pending` or already `failed`, and stuck `pending` rows older than 15 minutes should be surfaced for manual attention.
 
 ## Recommended execution sequence
 
