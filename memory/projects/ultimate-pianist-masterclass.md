@@ -75,6 +75,7 @@ In this schema, `waitlist_tier` means granted state, not checkout intent, so a p
 The main row tracks `waitlist_tier`, `payment_status`, `pdf_fulfillment_status`, Stripe ids, VIP payment timing, the latest PDF fulfillment error, and a fulfillment-attempt count.
 The payment success page and PDF delivery are separate steps in v1: successful payment moves the row to `pdf_fulfillment_status = 'pending'`, and PDF sending completes asynchronously afterward.
 For v1, PDF retry history stays on the main row instead of using a separate fulfillment-attempt log table.
+The free signup implementation uses a server-side endpoint, a generic success response for both new and duplicate submissions, and an idempotent upsert keyed by `email_normalized` that never downgrades pending-VIP or VIP rows.
 
 ## Recommended execution sequence
 
