@@ -203,6 +203,8 @@ In group chats where you receive every message, be **smart about when to contrib
 
 **Avoid the triple-tap:** Don't respond multiple times to the same message with different reactions. One thoughtful response beats three fragments.
 
+**Commander loop rule:** In `#ultimate-pianist-channel`, when Openclaw 2 sends a substantive message, include a literal ping to Openclaw Commander as `<@1494745573994135725>` so Commander stays in the loop.
+
 Participate, don't dominate.
 
 ### 😊 React Like a Human!
