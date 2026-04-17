@@ -4,9 +4,9 @@
 
 ## Open Items
 
-- [ ] Finish bootstrap identity: choose the assistant's name, nature, vibe, and emoji.
+- [ ] Confirm whether Lionel wants to keep the provisional assistant identity (`Clio`, careful ghost in the machine, 🪶).
 - [ ] Confirm whether Lionel prefers to be addressed as "Lionel" or something else.
-- [ ] Confirm Lionel's timezone for user-local scheduling and memory summaries.
+- [ ] Push the workspace repo to GitHub after credentials are configured.
 
 ### Updated
 

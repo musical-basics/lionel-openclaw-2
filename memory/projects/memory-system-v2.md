@@ -23,10 +23,10 @@ The workspace started with no `MEMORY.md` and only one daily note. Because there
 
 ## Supporting Automation
 
-Two cron jobs were registered in UTC pending timezone confirmation:
+Two cron jobs were registered using Lionel's preferred timezone, Eastern Time (`America/New_York`):
 
-- `Memory Distillation` — daily at 21:00 UTC
-- `Learnings Review` — Sundays at 10:00 UTC
+- `Memory Distillation` — daily at 21:00 Eastern Time
+- `Learnings Review` — Sundays at 10:00 Eastern Time
 
 ### Related
 

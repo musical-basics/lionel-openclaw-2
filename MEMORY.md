@@ -6,7 +6,7 @@
 
 ## Core Facts (stable, always-loaded)
 
-- User: Lionel, timezone not yet confirmed, direct-chat human for this workspace
+- User: Lionel, Eastern Time (`America/New_York`), direct-chat human for this workspace
 - Active projects: see memory/projects/
 - Active tools: see memory/tools/
 - Key people: see memory/people/

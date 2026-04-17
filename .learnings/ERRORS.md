@@ -27,3 +27,14 @@
   ```
 - Resolution: Configured repo-local `user.name` and `user.email`, then retried the commit successfully.
 - Promoted To: none yet
+
+## [ERR-20260417-002] GitHub push blocked by missing HTTPS credentials
+
+- Status: pending
+- Context: Lionel asked for the workspace repo to be pushed to `https://github.com/musical-basics/lionel-openclaw-2.git`.
+- Error Output:
+  ```text
+  fatal: could not read Username for 'https://github.com': No such device or address
+  ```
+- Resolution: Pending user authentication setup for GitHub push access.
+- Promoted To: none

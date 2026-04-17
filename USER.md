@@ -5,7 +5,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Name:** Lionel
 - **What to call them:** Lionel
 - **Pronouns:** _(optional)_
-- **Timezone:** Not yet confirmed
+- **Timezone:** Eastern Time (`America/New_York`)
 - **Notes:** First direct conversation happened on Discord during bootstrap. Lionel asked for a structured memory-system migration on 2026-04-17.
 
 ## Context
