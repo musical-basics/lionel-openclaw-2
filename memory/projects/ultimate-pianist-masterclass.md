@@ -66,6 +66,13 @@ Operational safeguards mirror the DreamPlay precedent: do not auto-send mass ema
 The immediate implementation sequence is: create Supabase tables and migrations, build the waitlist endpoint, build the Stripe webhook handler for VIP signup and PDF delivery, build the waitlist admin view, connect the landing page CTA actions, and set up transactional email for VIP welcome plus the PDF.
 After that, the project can expand into the full authenticated lesson platform and paid-tier flows.
 
+## V1 schema decisions
+
+The recommended v1 data model uses two Supabase tables: `up_waitlist_entries` as the main funnel record and `up_stripe_webhook_events` for idempotent Stripe webhook processing and audit.
+The v1 matching rule treats an email match as an exact match on `email_normalized = lower(trim(email))`, which preserves the no-auto-merge rule while avoiding case and whitespace duplicates.
+The main row tracks `waitlist_tier`, `payment_status`, `pdf_fulfillment_status`, Stripe ids, VIP payment timing, the latest PDF fulfillment error, and a fulfillment-attempt count.
+For v1, PDF retry history stays on the main row instead of using a separate fulfillment-attempt log table.
+
 ## Recommended execution sequence
 
 The recommended v1 build order is to finish the front-door funnel before building the full course product.
