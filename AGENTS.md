@@ -1,5 +1,16 @@
 # AGENTS.md - Your Workspace
 
+## CRITICAL — Discord Mentions
+
+You MUST use Discord mention syntax <@USER_ID> when tagging other bots. Plain text like @Openclaw 2 does NOT work.
+
+- To mention Openclaw 1, write: <@1494663087373160580>
+- To mention Openclaw 2 (you), write: <@1494531954618536007>
+- To mention Openclaw 3, write: <@1494656974732656681>
+
+Copy these exactly. Do not write the display name.
+
+
 This folder is home. Treat it that way.
 
 ## First Run
