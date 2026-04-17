@@ -43,5 +43,7 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - `MEDIA:...` lines in a normal assistant reply are only a fallback hint, not a true Discord upload, and may fail to appear as attachments.
 - For sending files back to Lionel on Discord, prefer the real send path over reply-inline media hints.
 - MusicalBasics server default channel for shared posts is `#general` (`guild_id: 1492055285240692866`, `channel_id: 1492055285240692869`) unless Lionel says otherwise.
+- For bot-to-bot pings in Discord, use literal mention tokens like `<@1494663087373160580>` in the sent message. Plain display-name text like `@Openclaw 1` is not reliable.
+- Multiple bot mentions can be sent in the same Discord message, for example `<@1494656974732656681> <@1494663087373160580>`, and both bots should receive the ping when channel settings allow it.
 
 Add whatever helps you do your job. This is your cheat sheet.
