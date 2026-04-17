@@ -21,9 +21,9 @@ Request requirements:
 - this endpoint is server-to-server only, not browser-facing
 
 Recommended webhook response behavior:
-- return `200` when a verified event is applied, ignored, or recorded as failed in `up_stripe_webhook_events`
+- return `200` when a verified event is applied, ignored, or is a duplicate of an already-finalized `applied` or `ignored` event
 - return `400` when signature verification fails or the payload is malformed
-- return `500` only if the server cannot complete the initial verified-event persistence step and wants Stripe to retry later
+- return `500` when a verified event cannot be fully applied and should be retried by Stripe, including verified-but-apply-failed events after the webhook row has already been recorded
 
 Important v1 rule:
 - do not perform direct VIP grant logic from the success page or client-side redirect
@@ -102,8 +102,11 @@ Processing rule:
    - `payload`
    - `processing_status = 'received'`
 3. Use `on conflict (stripe_event_id) do nothing`.
-4. If the insert affects 0 rows, treat the webhook as already recorded, return `200`, and stop.
-5. From this point forward, finalize that webhook row as one of:
+4. If the insert affects 0 rows, load the existing webhook row by `stripe_event_id` and branch by its current status.
+5. If the existing row is already `applied` or `ignored`, return `200` and stop.
+6. If the existing row is `failed`, treat this delivery as a retry and attempt the normal apply path again using the same `stripe_event_id`.
+7. If the existing row is still `received`, do not create a second worker path for the same event; return `200` and let the in-flight attempt finish.
+8. From this point forward, finalize that webhook row as one of:
    - `applied`
    - `ignored`
    - `failed`
@@ -123,6 +126,10 @@ Lookup order:
 
 Creation rule:
 - if no row is found after both lookups, create a new row using the successful checkout email as the canonical email for that VIP record
+
+Expected v1 consequence:
+- this automatic create path can produce parallel rows for one human if they used different emails across free signup and VIP checkout
+- that is expected in v1 and is left for manual admin merge outside the automated flow
 
 Source rule on newly created rows:
 - use verified `metadata.source` if present
@@ -180,6 +187,9 @@ Resulting state:
 - PDF fulfillment is queued as pending
 - no email delivery is attempted synchronously in this step
 
+Timestamp note:
+- in v1, `vip_paid_at` stores the Stripe event timestamp, not local webhook processing time
+
 ## Payment failure and ignored-event handling
 
 Ignored-event rule for v1:
@@ -203,9 +213,16 @@ Ignored-event behavior:
 
 Failed-webhook rule:
 - if a verified event cannot be safely applied because required success data is missing, or because the success row update cannot be completed after the webhook-event row was created, mark that webhook-event row as `failed`
+- set `processed_at = now()`
 - set `error_message` to a short internal reason
 - do not grant VIP
 - do not queue PDF fulfillment
+
+Explicit retry policy for v1:
+- if initial verified-event persistence itself fails, return `500` so Stripe retries later
+- if the verified webhook-event row was recorded but apply logic fails afterward, keep that row as `failed` and return `500` so Stripe retries the same event
+- on a later delivery of the same `stripe_event_id`, do not treat an existing `failed` row as a completed duplicate; retry the apply path
+- once the event is later applied successfully, or deterministically classified as ignored, finalize it as `applied` or `ignored` and return `200`
 
 Important v1 simplification:
 - non-success webhook events do not attempt to repair or downgrade pending checkout rows

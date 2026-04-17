@@ -87,7 +87,10 @@ The Step 5 payment-confirmation implementation uses a server-side `POST /api/str
 In v1, only verified paid `checkout.session.completed` events for `metadata.flow = 'ultimate_pianist_v1_vip_waitlist'` can grant VIP.
 Webhook idempotency is anchored on unique `stripe_event_id` rows in `up_stripe_webhook_events`, with row lookup by `stripe_checkout_session_id` first and `email_normalized` second.
 If neither lookup finds a row, the successful checkout email becomes a new canonical VIP row, using verified `metadata.source` when present and otherwise `source = 'stripe_webhook_vip'`.
+That automatic create path can produce parallel rows for one human if different emails were used across the funnel, and that is expected in v1 rather than auto-merged.
 Webhook payment success updates the row to `waitlist_tier = 'vip'`, `payment_status = 'paid'`, and `pdf_fulfillment_status = 'pending'` without sending the PDF synchronously, while non-success or unrelated verified events are recorded and ignored in v1.
+For v1, `vip_paid_at` uses the Stripe event timestamp rather than local processing time.
+If a verified webhook row is recorded but apply logic fails, the handler marks that webhook row `failed` and returns `500` so Stripe retries; later deliveries of the same `stripe_event_id` retry only previously `failed` rows, while finalized `applied` and `ignored` rows short-circuit safely.
 
 ## Recommended execution sequence
 
