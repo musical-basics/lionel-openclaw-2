@@ -16,6 +16,7 @@
 ### Projects
 - `memory/projects/dreamplay.md` — current DreamPlay product, preorder, and portal context
 - `memory/projects/memory-system-v2.md` — design decision and current structure for the workspace memory system
+- `memory/projects/ultimate-pianist-masterclass.md` — product, pricing, stack, and build priorities for Lionel's premium masterclass
 - `memory/projects/workspace-bootstrap-playbook.md` — repeatable handoff list of what was done during initial setup
 
 ### Tools
@@ -37,6 +38,7 @@
 - 2026-04-17 Promoted the embeddings addendum to `memory/tools/embedding-friendly-memory-writing.md` and `AGENTS.md` — retrieval writing rules should be durable and always available
 - 2026-04-17 Added `memory/projects/workspace-bootstrap-playbook.md` — future bots need a durable handoff of the initial setup work
 - 2026-04-17 Promoted fuller Lionel context into `USER.md` and `memory/projects/dreamplay.md` — durable identity, communication, and product facts from the approved handoff
+- 2026-04-17 Added `memory/projects/ultimate-pianist-masterclass.md` — durable masterclass product brief, pricing logic, and build priorities from Lionel's shared spec
 
 ## Distillation Log
 
