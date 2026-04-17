@@ -10,5 +10,5 @@
 - Status: pending
 - Requested By: Lionel
 - Need: Push `/home/openclaw/.openclaw/workspace` to `https://github.com/musical-basics/lionel-openclaw-2.git`.
-- Blocker: No GitHub HTTPS credentials or authenticated CLI session are available in this environment.
-- Next Step: Once GitHub auth is configured, run `git push -u origin main` from the workspace.
+- Blocker: The configured remote is correct, but the provided GitHub token does not have permission to push to that repository.
+- Next Step: Retry with a GitHub token that has write access to `musical-basics/lionel-openclaw-2`, or switch to an SSH remote with an authorized key.
