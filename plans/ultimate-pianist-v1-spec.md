@@ -1,38 +1,29 @@
-# Ultimate Pianist V1 Spec
+# Ultimate Pianist V1 Contract / Spec
 
 Updated: 2026-04-17
-Status: Draft
-Owner: Lionel Yu
 
-## 1. Goal
+## Exact v1 promise
 
-V1 exists to capture demand and validate paid interest before the full course platform is built.
+A visitor can either join the free waitlist or pay $1 to join the VIP waitlist.
+If the visitor completes the $1 VIP payment successfully, they are marked as VIP and automatically receive the Easy Moonlight Sonata Nightmare PDF by email.
+Nothing else is promised in v1.
 
-The product promise in V1 is simple:
-- a visitor can join the free waitlist, or
-- a visitor can pay $1 to join the VIP waitlist, and
-- VIP buyers automatically receive the Easy Moonlight Sonata Nightmare PDF by email.
-
-## 2. User flows
-
-### Free waitlist flow
+## Free user flow
 1. Visitor lands on the Ultimate Pianist page.
 2. Visitor enters name and email.
-3. System stores the lead as a free waitlist signup.
+3. System stores the record as a free waitlist signup.
 4. Visitor sees a success state.
 
-### VIP waitlist flow
+## VIP user flow
 1. Visitor lands on the Ultimate Pianist page.
 2. Visitor clicks the VIP option.
 3. Visitor completes the $1 Stripe checkout.
-4. Stripe webhook marks the record as paid VIP.
-5. System triggers transactional email delivery.
-6. Visitor receives the Easy Moonlight Sonata Nightmare PDF.
+4. Stripe webhook verifies the successful payment.
+5. System upgrades or creates the record as VIP.
+6. System triggers transactional email delivery of the Easy Moonlight Sonata Nightmare PDF.
 7. Visitor sees a success or confirmation state.
 
-## 3. Required data fields
-
-Minimum fields for V1:
+## Required data fields
 - `id`
 - `name`
 - `email`
@@ -49,29 +40,24 @@ Minimum fields for V1:
 - `created_at`
 - `updated_at`
 
-Recommended rule: `email` should be treated as the unique person key for this funnel.
+Recommended rule: `email` is the unique person key for this funnel.
 
-## 4. Edge-case rules
-
+## Edge-case rules
 - If someone signs up free twice with the same email, update the existing record instead of creating a duplicate.
 - If someone joins free first and later buys VIP with the same email, upgrade the existing record to VIP.
-- If someone is already VIP, later free signup attempts should not downgrade them.
-- If payment succeeds but email delivery fails, keep the user marked as VIP paid and set `pdf_fulfillment_status = failed` so the admin can retry.
-- Stripe webhook handling must be idempotent. Duplicate webhook events must not create duplicate VIP grants or duplicate fulfillment records.
+- If someone is already VIP, a later free signup must not downgrade them.
+- If payment succeeds but email delivery fails, keep the user marked as VIP paid and set `pdf_fulfillment_status = failed` so admin can retry.
+- Stripe webhook handling must be idempotent. Duplicate events must not create duplicate VIP grants or duplicate fulfillment.
 
-## 5. System choices
-
-Use these tools for V1:
+## Tech choices
 - Frontend: Next.js on Vercel
 - Database: Supabase
 - Payments: Stripe
-- Transactional email: existing DreamPlay email tooling or current transactional email system already in Lionel's stack
+- Transactional email: Lionel's existing DreamPlay or current transactional email tooling
 - PDF storage: Supabase Storage
 
-## 6. Explicitly out of scope for V1
-
-Do not build these in V1:
-- the authenticated lesson platform
+## Explicit out-of-scope list
+- authenticated lesson platform
 - lesson modules and content library
 - progress tracking
 - monthly, 5-year, and lifetime course purchase flows
@@ -79,13 +65,3 @@ Do not build these in V1:
 - full analytics dashboard
 - mass-email automation
 - Teachable migration work beyond what is needed for the VIP PDF
-
-## 7. Definition of done for V1
-
-V1 is done when:
-- free signups are stored reliably
-- VIP $1 payments are stored reliably
-- successful Stripe payments upgrade the correct record to VIP
-- the PDF is delivered automatically
-- failed fulfillment is visible in admin
-- Lionel can review, filter, and export the waitlist
