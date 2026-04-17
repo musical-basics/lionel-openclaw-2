@@ -13,6 +13,8 @@ That keeps the approved "exact match only" rule while preventing case and whites
 ## Table 1: `up_waitlist_entries`
 
 Purpose: one row per unique normalized email in the v1 funnel.
+This is one row per normalized email, not one row per real-world person.
+If the same person uses two different emails, v1 will treat them as two separate rows unless an admin merges them manually outside the automated flow.
 
 ```sql
 create table public.up_waitlist_entries (
@@ -116,6 +118,16 @@ for each row
 execute function public.set_updated_at();
 ```
 
+### Semantic meaning of `waitlist_tier`
+
+`waitlist_tier` is the granted state, not the checkout-intent state.
+That means:
+- `waitlist_tier = 'free'` means the row does not yet have a granted VIP purchase
+- `waitlist_tier = 'vip'` means the row has a verified successful VIP payment
+- a checkout in progress is represented by `payment_status = 'pending'`, not by changing `waitlist_tier`
+
+So during VIP checkout start, the row stays `waitlist_tier = 'free'` until Stripe payment success is confirmed.
+
 ## Table 2: `up_stripe_webhook_events`
 
 Purpose: idempotent Stripe webhook processing and audit trail.
@@ -214,6 +226,7 @@ Process:
    - `stripe_customer_id`
    - `vip_checkout_started_at = now()`
    - `payment_status = 'pending'`
+   - keep `waitlist_tier = 'free'`
 5. If no row exists, insert a new row with:
    - `waitlist_tier = 'free'`
    - `payment_status = 'pending'`
@@ -224,6 +237,7 @@ Process:
 
 Resulting state:
 - checkout intent exists
+- the row is still not VIP yet
 - no one becomes VIP until Stripe payment success is confirmed
 
 ## 3. VIP payment success
@@ -237,8 +251,8 @@ Input:
 - raw Stripe payload
 
 Process:
-1. Insert a row into `up_stripe_webhook_events` with `processing_status = 'received'`.
-2. If `stripe_event_id` already exists, stop processing and return success to Stripe. This is the first idempotency guard.
+1. Attempt to insert a row into `up_stripe_webhook_events` with `processing_status = 'received'` using `on conflict (stripe_event_id) do nothing`.
+2. If the insert affects 0 rows, treat the webhook as already seen, return HTTP 200 to Stripe, and stop. This is the first idempotency guard.
 3. Find the target waitlist row in this order:
    - by `stripe_checkout_session_id`
    - fallback by `email_normalized`
@@ -256,10 +270,11 @@ Process:
    - `waitlist_entry_id = target row id`
    - `processing_status = 'applied'`
    - `processed_at = now()`
+7. Redirect or render the payment success page independently of PDF delivery. The success page should confirm payment succeeded and tell the user the PDF is being emailed shortly.
 
 Resulting state:
 - user is VIP-paid
-- PDF fulfillment is now pending
+- PDF fulfillment is now pending and may complete asynchronously after the payment success page loads
 
 ## 4. PDF fulfillment success
 
@@ -313,9 +328,9 @@ Secondary guards:
 - `up_waitlist_entries.stripe_payment_intent_id` is unique when present
 
 Processing rule:
-1. On webhook receipt, insert into `up_stripe_webhook_events` first.
-2. If insert conflicts on `stripe_event_id`, return HTTP 200 and do nothing else.
-3. If the event is new but the target waitlist row already has the same `stripe_payment_intent_id` and `payment_status = 'paid'`, mark the webhook event as `ignored` and stop.
+1. On webhook receipt, attempt `insert ... on conflict (stripe_event_id) do nothing` into `up_stripe_webhook_events` first.
+2. If 0 rows were inserted, the event is a duplicate. Return HTTP 200 and do nothing else.
+3. If the event row was inserted but the target waitlist row already has the same `stripe_payment_intent_id` and `payment_status = 'paid'`, update that webhook-event row to `processing_status = 'ignored'`, set `processed_at = now()`, and stop.
 4. Never create a second VIP row for the same normalized email, checkout session id, or payment intent id.
 
 ## Recommended v1 migration order
@@ -330,3 +345,4 @@ Processing rule:
 
 I intentionally kept this to two tables for v1.
 I did not add a separate PDF-attempt log table yet because the main row already captures enough state for admin retry, audit of last error, and simple CSV export.
+The payment success page should not block on synchronous PDF sending. Payment confirmation and PDF fulfillment should be treated as separate steps, with the row moving to `pdf_fulfillment_status = 'pending'` first and then later to `sent` or `failed`.
