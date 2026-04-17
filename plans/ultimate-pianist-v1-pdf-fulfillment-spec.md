@@ -20,7 +20,7 @@ A row becomes eligible for PDF fulfillment when all of these are true:
 Recommended v1 runner:
 - use a server-side fulfillment worker, not a browser action
 - recommended internal entrypoint: `POST /api/internal/ultimate-pianist/fulfill-pdf`
-- invoke it from a scheduled server-side job, recommended every 1 minute
+- invoke it from a scheduled server-side job on a reasonable recurring cadence
 - allow the same worker to be called for manual admin retry of one specific row
 
 Recommended internal request contract:
@@ -37,8 +37,8 @@ Rules:
 
 Recommended row selection for scheduled runs:
 - filter to rows where `waitlist_tier = 'vip'`, `payment_status = 'paid'`, and `pdf_fulfillment_status = 'pending'`
-- oldest `vip_paid_at` first
-- ignore rows whose `pdf_last_attempt_at` is too recent for the current retry window
+- prefer older pending rows first
+- avoid immediate tight reprocessing of rows that were just attempted
 
 ## Concurrency and duplicate-send protection
 
@@ -117,12 +117,12 @@ Request rules:
 - use the stable idempotency key for every retry of the same row
 
 Recommended success interpretation:
-- treat an HTTP `200` or `202` from DreamPlay Email API as accepted delivery work for v1
+- treat a normal accepted success response from DreamPlay Email API as fulfilled for v1
 - if the provider returns a message id, log it for troubleshooting even though v1 does not store it in `up_waitlist_entries`
 
 Recommended failure interpretation:
-- treat HTTP `429`, any `5xx`, timeout, or network error as retryable failure
-- treat missing recipient email, missing PDF asset, malformed request, or provider `4xx` validation errors as terminal failure
+- treat transient provider or network problems as retryable failure
+- treat missing recipient email, missing PDF asset, malformed request, or hard provider validation rejection as terminal failure
 
 ## Fulfillment processing flow
 
@@ -172,8 +172,8 @@ Resulting state:
 Retryable failures include:
 - DreamPlay Email API timeout
 - network failure before a definitive response
-- HTTP `429`
-- HTTP `5xx`
+- temporary provider unavailability
+- other transient delivery infrastructure problems
 
 On retryable failure, update:
 - `pdf_fulfillment_status = 'pending'`
@@ -193,7 +193,7 @@ Terminal failures include:
 - missing or blank canonical email on the row
 - missing server-owned PDF asset
 - malformed request built by the app
-- provider `4xx` validation or hard rejection response
+- hard provider validation or rejection response
 
 On terminal failure, update:
 - `pdf_fulfillment_status = 'failed'`
@@ -217,22 +217,15 @@ Recommended v1 retry policy:
 - allow automatic retry only for rows still in `pdf_fulfillment_status = 'pending'`
 - do not auto-retry rows already marked `failed`
 - use the same stable provider idempotency key on every retry for the same row
-
-Recommended retry windows based on `pdf_fulfillment_attempt_count`:
-- attempt count `0`: eligible immediately
-- after retryable failure `1`: keep `pending` and retry after 5 minutes
-- after retryable failure `2`: keep `pending` and retry after 30 minutes
-- after retryable failure `3`: set `pdf_fulfillment_status = 'failed'` and stop automatic retry
-
-This means v1 allows a maximum of 3 automatic send attempts total for the same row: the initial attempt plus 2 scheduled retries.
+- allow a small number of spaced automatic retries for transient failures before promoting the row to `failed`
 
 Operational rule:
-- the scheduler should skip pending rows whose `pdf_last_attempt_at` is newer than the current retry window
+- the scheduler should avoid tight retry loops and skip rows that were just attempted
 
 Reason for this v1 policy:
 - it gives a few automatic retries for transient provider issues
-- it avoids tight retry loops
-- it pushes long-running problems into an explicit admin queue instead of hiding them forever
+- it avoids noisy or duplicate sending behavior
+- it pushes longer-running problems into an explicit admin queue instead of hiding them forever
 
 ## Manual retry and admin expectations
 
@@ -253,7 +246,7 @@ Recommended manual retry behavior:
 - do not change `waitlist_tier`, `payment_status`, or `vip_paid_at`
 
 Recommended stuck-pending rule:
-- if a row stays `pending` longer than 15 minutes, treat it as operationally stuck and surface it in admin filters
+- if a row stays `pending` for an unexpectedly long time, treat it as operationally stuck and surface it in admin filters
 - admin retry is allowed for these stuck pending rows
 
 ## User-visible assumptions

@@ -97,9 +97,9 @@ The Step 6 PDF-fulfillment implementation is defined as a server-side worker tha
 The recommended v1 entrypoint is `POST /api/internal/ultimate-pianist/fulfill-pdf`, invoked by a scheduled server-side job and reusable for targeted admin retry.
 The DreamPlay Email API request should be fully server-owned, include the canonical recipient email, the Easy Moonlight Sonata Nightmare PDF attachment, and a stable per-row idempotency key `ultimate_pianist_v1_pdf:${waitlist_entry_id}` to suppress duplicate sends across retries or crash recovery.
 On accepted provider success, fulfillment writes `pdf_fulfillment_status = 'sent'`, `pdf_sent_at = now()`, clears `pdf_last_error`, and increments `pdf_fulfillment_attempt_count` without touching VIP or payment fields.
-Retryable email-delivery failures such as timeout, `429`, or `5xx` keep the row `pending`, update `pdf_last_attempt_at`, store a short internal error, and increment the attempt count; v1 then retries after 5 minutes and 30 minutes before promoting the row to `failed` after the third retryable failure.
-Terminal email-delivery failures such as missing canonical email, missing PDF asset, malformed request, or provider `4xx` rejection set `pdf_fulfillment_status = 'failed'` immediately while preserving VIP-paid state.
-Admin retry in v1 is limited to VIP-paid rows still in `pending` or already `failed`, and stuck `pending` rows older than 15 minutes should be surfaced for manual attention.
+Retryable email-delivery failures keep the row `pending`, update `pdf_last_attempt_at`, store a short internal error, and allow a small number of spaced automatic retries before the row is promoted to `failed` for manual attention.
+Terminal email-delivery failures such as missing canonical email, missing PDF asset, malformed request, or hard provider rejection set `pdf_fulfillment_status = 'failed'` immediately while preserving VIP-paid state.
+Admin retry in v1 is limited to VIP-paid rows still in `pending` or already `failed`, and operationally stuck `pending` rows should be surfaced for manual attention.
 
 ## Recommended execution sequence
 
