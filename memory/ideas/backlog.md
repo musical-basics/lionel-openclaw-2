@@ -6,7 +6,6 @@
 
 - [ ] Confirm whether Lionel wants to keep the provisional assistant identity (`Clio`, careful ghost in the machine, 🪶).
 - [ ] Confirm whether Lionel prefers to be addressed as "Lionel" or something else.
-- [ ] Push the workspace repo to GitHub after credentials with repository write access are configured.
 
 ### Updated
 

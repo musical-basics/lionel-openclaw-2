@@ -30,7 +30,7 @@
 
 ## [ERR-20260417-002] GitHub push blocked by GitHub authentication and permission issues
 
-- Status: pending
+- Status: resolved
 - Context: Lionel asked for the workspace repo to be pushed to `https://github.com/musical-basics/lionel-openclaw-2.git`.
 - Error Output:
   ```text
@@ -39,5 +39,5 @@
   remote: Permission to musical-basics/lionel-openclaw-2.git denied to musical-basics.
   fatal: unable to access 'https://github.com/musical-basics/lionel-openclaw-2.git/': The requested URL returned error: 403
   ```
-- Resolution: Missing local credentials were bypassed with interactive HTTPS auth, but the provided GitHub token still does not have permission to push to the target repository.
+- Resolution: Retried with interactive HTTPS auth and a GitHub token that had repository write access, then pushed `main` to `origin` successfully.
 - Promoted To: none
