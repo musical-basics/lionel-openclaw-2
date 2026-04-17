@@ -78,6 +78,9 @@ For v1, PDF retry history stays on the main row instead of using a separate fulf
 The free signup implementation uses a server-side endpoint, a generic success response for both new and duplicate submissions, and an idempotent upsert keyed by `email_normalized` that never downgrades pending-VIP or VIP rows.
 In v1, `source` is first-touch, not last-touch, so duplicate free signups update `name` and `updated_at` but do not overwrite the original `source` value.
 The free signup endpoint should also have a minimal IP-based rate limit and return `429 rate_limited` on abuse throttling.
+The VIP checkout-start implementation uses a server-side `POST /api/waitlist/vip/checkout` endpoint that creates or reuses a Stripe Checkout Session but does not grant VIP before webhook confirmation.
+At checkout start, a non-paid row moves to `payment_status = 'pending'` and stores the latest `stripe_checkout_session_id`, `stripe_customer_id`, and `vip_checkout_started_at`, while preserving first-touch `source`, granted `waitlist_tier`, and all fulfillment fields.
+If a row is already VIP-paid, v1 should return `already_vip` instead of creating a second checkout session; if a pending session is still open, v1 should reuse it rather than opening another one for the same normalized email.
 
 ## Recommended execution sequence
 
