@@ -83,6 +83,11 @@ At checkout start, a non-paid row moves to `payment_status = 'pending'` and stor
 If a row is already VIP-paid, v1 should return `already_vip` instead of creating a second checkout session.
 If a row is pending, session reuse is a server-side decision based on current Stripe session state: reuse only if the stored Checkout Session is still open, return `payment_processing` if Stripe shows it completed while the local row is still pending, and create a fresh replacement session only when the stored pending session is stale or unusable.
 The `/vip/cancel` return route is read-only in v1 and must not mutate any database state.
+The Step 5 payment-confirmation implementation uses a server-side `POST /api/stripe/webhook` endpoint with raw-body Stripe signature verification against the server-owned webhook secret.
+In v1, only verified paid `checkout.session.completed` events for `metadata.flow = 'ultimate_pianist_v1_vip_waitlist'` can grant VIP.
+Webhook idempotency is anchored on unique `stripe_event_id` rows in `up_stripe_webhook_events`, with row lookup by `stripe_checkout_session_id` first and `email_normalized` second.
+If neither lookup finds a row, the successful checkout email becomes a new canonical VIP row, using verified `metadata.source` when present and otherwise `source = 'stripe_webhook_vip'`.
+Webhook payment success updates the row to `waitlist_tier = 'vip'`, `payment_status = 'paid'`, and `pdf_fulfillment_status = 'pending'` without sending the PDF synchronously, while non-success or unrelated verified events are recorded and ignored in v1.
 
 ## Recommended execution sequence
 
