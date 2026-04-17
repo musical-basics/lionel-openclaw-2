@@ -83,6 +83,17 @@ Promote only when the signal is durable:
 
 Distillation should stay embedding-friendly. Do not add keyword stuffing, synonym padding, multi-language expansions, or "reformulated concepts" sections to source files. If retrieval feels uncertain, expand the query at search time instead of diluting documents.
 
+When writing atomic files, optimize for sharp embeddings:
+
+- Keep one topic per file and one subtopic per section
+- Lead each section with the concept and the key fact
+- Write proper nouns exactly and consistently
+- Prefer prose for conceptual material, bullets for true lists
+- Keep `### Related` sections small and navigational
+- Update files in place and keep the `### Updated` line current instead of appending stale history forever
+
+After any significant restructure or new atomic file, run a quick retrieval test using wording that differs from the stored phrasing. If retrieval is weak, rewrite the lead or split the topic instead of padding the file.
+
 ### 📚 Learnings Surface
 
 Use `.learnings/` for structured self-correction:
@@ -112,7 +123,7 @@ Review pending `.learnings/` entries weekly. Look for recurring patterns before 
 - **Memory is limited** — if you want to remember something, WRITE IT TO A FILE
 - "Mental notes" don't survive session restarts. Files do.
 - When someone says "remember this" → update today's daily note or the correctly routed destination file
-- When you learn a lesson → update AGENTS.md, TOOLS.md, `.learnings/`, or the relevant skill
+- When you learn a lesson → update AGENTS.md, TOOLS.md, `.learnings/`, or the relevant atomic memory file
 - When you make a mistake → document it with the actual failure output
 - **Text > Brain** 📝
 

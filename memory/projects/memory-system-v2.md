@@ -17,6 +17,12 @@ On 2026-04-17, Lionel asked this workspace to adopt a structured memory model ba
 
 This structure assumes embedding-first retrieval. Do not add keyword-stuffing sections, synonym padding, multi-language keyword expansion, or repeated reformulations inside source documents. If recall feels uncertain, expand the query at search time instead of diluting the source files.
 
+## Embeddings Addendum
+
+Atomic memory writing now explicitly targets OpenClaw's chunked hybrid retrieval layer. Each file should stay topically narrow, each section should open with the concept it is about, and proper nouns should be written exactly and consistently. Conceptual material should usually be written as connected prose, while list-shaped material can stay in bullets.
+
+The detailed operating note lives in `memory/tools/embedding-friendly-memory-writing.md`. That note also defines the verification habit: after significant structural changes, test retrieval with deliberately different wording and fix weak file leads or mixed topics instead of padding the corpus.
+
 ## Initial Migration Outcome
 
 The workspace started with no `MEMORY.md` and only one daily note. Because there was almost nothing to migrate, this change was mostly scaffolding plus routing current facts into the right homes.
@@ -35,4 +41,4 @@ Two cron jobs were registered using Lionel's preferred timezone, Eastern Time (`
 
 ### Updated
 
-2026-04-17 — Created the v2 memory structure and recorded the adoption decision
+2026-04-17 — Added the embeddings addendum and retrieval-writing verification rules

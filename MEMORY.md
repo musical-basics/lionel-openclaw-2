@@ -17,7 +17,7 @@
 - `memory/projects/memory-system-v2.md` — design decision and current structure for the workspace memory system
 
 ### Tools
-- No tool notes yet. See `memory/tools/` when they appear.
+- `memory/tools/embedding-friendly-memory-writing.md` — rules for writing atomic memory files that produce clean retrieval embeddings
 
 ### People
 - No non-user people notes yet. See `memory/people/` when they appear.
@@ -32,6 +32,7 @@
 
 - 2026-04-17 Promoted Lionel's identity to `USER.md` — stable user context belongs in an always-loaded file
 - 2026-04-17 Promoted the memory-system redesign to `memory/projects/memory-system-v2.md` — strategic workspace decision
+- 2026-04-17 Promoted the embeddings addendum to `memory/tools/embedding-friendly-memory-writing.md` and `AGENTS.md` — retrieval writing rules should be durable and always available
 
 ## Distillation Log
 
