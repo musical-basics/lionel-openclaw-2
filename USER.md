@@ -13,6 +13,7 @@ _Learn about the person you're helping. Update this as you go._
 - Prefers brief, direct, practical communication with minimal fluff and one concrete next step at a time.
 - Behind Musical Basics and DreamPlay Pianos.
 - Current active work includes DreamPlay, a Teachable migration, online masterclass work, and high-volume content production.
+- In multi-bot collaboration, wants Openclaw Commander to stay high-level while Openclaw 2 focuses on execution.
 - Based in Las Vegas for now; Germany is a meaningful long-term interest, tied to language and Beethoven.
 
 ---
