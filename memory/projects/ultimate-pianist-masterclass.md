@@ -40,7 +40,8 @@ The fifth priority is an admin dashboard for users, content, waitlist analytics,
 Lionel prefers Next.js and React on Vercel, with Supabase for database and likely auth, Stripe for payments, and Tailwind for styling.
 Video should be hosted externally through Vimeo Pro or Mux, not self-hosted.
 PDF storage can use Supabase Storage or Cloudflare R2.
-Existing infrastructure worth reusing includes the DreamPlay Email API, a current Supabase setup, Stripe, Vercel, and Lionel's custom email tooling or Inngest for transactional messages.
+For the v1 waitlist funnel, transactional email is locked to the DreamPlay Email API.
+Existing infrastructure worth reusing includes the DreamPlay Email API, a current Supabase setup, Stripe, and Vercel.
 
 ## Design direction
 
@@ -54,6 +55,9 @@ Monthly subscribers do not get keyboard credits.
 All paid tiers get the same content access.
 VIP waitlist members get 24-hour early access before public launch.
 The $1 VIP payment should automatically trigger delivery of the Easy arrangement PDF.
+If the Stripe checkout email matches an existing free-waitlist email exactly, the existing record should be upgraded to VIP.
+If the Stripe checkout email does not match exactly, the system should create a new VIP record and never auto-merge the identities.
+If PDF delivery fails after successful payment, the user should remain marked as VIP paid and the fulfillment should be manually retryable by admin.
 
 Operational safeguards mirror the DreamPlay precedent: do not auto-send mass email without Lionel's approval, do not delete user or database data without approval, do not modify `.env` files without approval, do not run destructive database commands, do not change Stripe pricing without approval, always use migrations for schema changes, and deploy to preview or staging before production.
 

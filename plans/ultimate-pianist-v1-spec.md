@@ -19,17 +19,17 @@ Nothing else is promised in v1.
 2. Visitor clicks the VIP option.
 3. Visitor completes the $1 Stripe checkout.
 4. Stripe webhook verifies the successful payment.
-5. System upgrades or creates the record as VIP.
-6. System triggers transactional email delivery of the Easy Moonlight Sonata Nightmare PDF.
-7. Visitor sees a success or confirmation state.
+5. If the Stripe checkout email exactly matches an existing free waitlist record, system upgrades that record to VIP.
+6. If the Stripe checkout email does not exactly match an existing record, system creates a new VIP record and does not auto-merge.
+7. System triggers transactional email delivery of the Easy Moonlight Sonata Nightmare PDF.
+8. Visitor sees a success or confirmation state.
 
 ## Required data fields
 - `id`
 - `name`
 - `email`
 - `source`
-- `signup_type` (`free` or `vip`)
-- `vip_status` (`false` or `true`)
+- `waitlist_tier` (`free` or `vip`)
 - `payment_status` (`none`, `pending`, `paid`, `failed`, `refunded`)
 - `pdf_fulfillment_status` (`not_applicable`, `pending`, `sent`, `failed`)
 - `stripe_customer_id`
@@ -40,20 +40,21 @@ Nothing else is promised in v1.
 - `created_at`
 - `updated_at`
 
-Recommended rule: `email` is the unique person key for this funnel.
+Recommended rule: `email` is the unique person key only on exact match. The successful Stripe checkout email is the canonical email for the VIP record.
 
 ## Edge-case rules
 - If someone signs up free twice with the same email, update the existing record instead of creating a duplicate.
 - If someone joins free first and later buys VIP with the same email, upgrade the existing record to VIP.
+- If the free signup email and VIP checkout email do not exactly match, do not auto-merge. Create a new VIP record and leave any merge as a manual admin decision.
 - If someone is already VIP, a later free signup must not downgrade them.
-- If payment succeeds but email delivery fails, keep the user marked as VIP paid and set `pdf_fulfillment_status = failed` so admin can retry.
+- If payment succeeds but email delivery fails, keep the user marked as VIP paid, set `pdf_fulfillment_status = failed`, and allow manual admin retry of PDF fulfillment.
 - Stripe webhook handling must be idempotent. Duplicate events must not create duplicate VIP grants or duplicate fulfillment.
 
 ## Tech choices
 - Frontend: Next.js on Vercel
 - Database: Supabase
 - Payments: Stripe
-- Transactional email: Lionel's existing DreamPlay or current transactional email tooling
+- Transactional email: DreamPlay Email API
 - PDF storage: Supabase Storage
 
 ## Explicit out-of-scope list
@@ -62,6 +63,6 @@ Recommended rule: `email` is the unique person key for this funnel.
 - progress tracking
 - monthly, 5-year, and lifetime course purchase flows
 - DreamPlay credit redemption
-- full analytics dashboard
+- large analytics or content dashboard work beyond a simple admin list, CSV export, and manual PDF retry
 - mass-email automation
 - Teachable migration work beyond what is needed for the VIP PDF
