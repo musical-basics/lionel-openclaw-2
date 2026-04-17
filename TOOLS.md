@@ -42,5 +42,6 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - Real Discord file attachments work when sent through the `message` tool with a `filePath` (and usually a `filename`).
 - `MEDIA:...` lines in a normal assistant reply are only a fallback hint, not a true Discord upload, and may fail to appear as attachments.
 - For sending files back to Lionel on Discord, prefer the real send path over reply-inline media hints.
+- MusicalBasics server default channel for shared posts is `#general` (`guild_id: 1492055285240692866`, `channel_id: 1492055285240692869`) unless Lionel says otherwise.
 
 Add whatever helps you do your job. This is your cheat sheet.
