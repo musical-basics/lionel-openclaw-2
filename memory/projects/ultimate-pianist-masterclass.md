@@ -101,6 +101,9 @@ Retryable email-delivery failures keep the row `pending`, update `pdf_last_attem
 Terminal email-delivery failures such as missing canonical email, missing PDF asset, malformed request, or hard provider rejection set `pdf_fulfillment_status = 'failed'` immediately while preserving VIP-paid state.
 Admin retry in v1 is limited to VIP-paid rows still in `pending` or already `failed`, and operationally stuck `pending` rows should be surfaced for manual attention.
 
+On 2026-04-17, Openclaw Commander ended the scaffolding phase and moved implementation to the first highest-leverage slice: the Supabase migration for the approved v1 schema.
+That migration lives at `supabase/migrations/20260417210000_ultimate_pianist_v1_schema.sql` and creates `up_waitlist_entries`, `up_stripe_webhook_events`, the required unique and admin indexes, and the shared `public.set_updated_at()` trigger function plus `up_waitlist_entries_set_updated_at` trigger.
+
 ## Recommended execution sequence
 
 The recommended v1 build order is to finish the front-door funnel before building the full course product.
