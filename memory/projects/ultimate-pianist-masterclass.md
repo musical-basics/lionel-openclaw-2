@@ -62,6 +62,16 @@ Operational safeguards mirror the DreamPlay precedent: do not auto-send mass ema
 The immediate implementation sequence is: create Supabase tables and migrations, build the waitlist endpoint, build the Stripe webhook handler for VIP signup and PDF delivery, build the waitlist admin view, connect the landing page CTA actions, and set up transactional email for VIP welcome plus the PDF.
 After that, the project can expand into the full authenticated lesson platform and paid-tier flows.
 
+## Recommended execution sequence
+
+The recommended v1 build order is to finish the front-door funnel before building the full course product.
+Start by locking scope around a working waitlist plus VIP funnel, then define the Supabase schema for leads, VIP status, fulfillment state, source tags, and timestamps.
+Next, build the free waitlist signup flow, then the paid $1 VIP signup flow through Stripe.
+After that, implement the Stripe webhook so successful VIP payments mark the user correctly and trigger automatic delivery of the Easy Moonlight Sonata Nightmare PDF.
+Once fulfillment works, build the admin view with search, filters, exports, and clear free-versus-VIP counts.
+Then connect the landing page CTA buttons and success states end-to-end, deploy to preview, and run full flow testing for free signup, VIP payment, webhook handling, PDF delivery, and duplicate or retry edge cases.
+Only after the funnel, payment, and fulfillment path is solid should the project expand into the authenticated lesson platform, paid access tiers, VIP early-access logic, DreamPlay credits, and the fuller analytics and content admin dashboard.
+
 ### Related
 
 - DreamPlay is the keyboard hardware cross-sell partner and uses keyboard-credit incentives inside this funnel.
