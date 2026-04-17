@@ -65,6 +65,7 @@ Recommended response contract:
 - `200 { "ok": true, "status": "checkout_created", "checkoutUrl": "https://checkout.stripe.com/..." }`
 - `200 { "ok": true, "status": "checkout_reused", "checkoutUrl": "https://checkout.stripe.com/..." }`
 - `200 { "ok": true, "status": "already_vip" }`
+- `200 { "ok": true, "status": "payment_processing" }`
 - `400 { "ok": false, "error": "invalid_input" }`
 - `429 { "ok": false, "error": "rate_limited" }`
 - `500 { "ok": false, "error": "server_error" }`
@@ -84,6 +85,12 @@ Recommended Stripe fields:
 - `metadata.email_normalized = email_normalized`
 - `metadata.source = source`
 
+Session reuse rule for v1:
+- treat reuse as a server-side decision, not a client-side assumption
+- only reuse a stored Checkout Session if Stripe confirms that exact session is still open and reusable
+- if Stripe says the stored session is already completed but the local row is still `payment_status = 'pending'`, do not create a new session; return `payment_processing` and let webhook reconciliation finish
+- if Stripe says the stored session is expired, missing, or otherwise unusable, create a fresh Checkout Session and replace the stored one
+
 Important v1 rule:
 - do not return `checkoutUrl` to the browser unless the corresponding pending checkout state has been written successfully to the database
 
@@ -101,8 +108,11 @@ Write logic:
 1. Normalize input on the server.
 2. Look up `up_waitlist_entries` by `email_normalized`.
 3. If an existing row is already `waitlist_tier = 'vip'` and `payment_status = 'paid'`, do not create a new Checkout Session.
-4. Otherwise create or reuse a Checkout Session.
-5. After a usable Checkout Session exists, write the pending checkout state.
+4. If an existing row is `payment_status = 'pending'`, inspect the stored `stripe_checkout_session_id` in Stripe before deciding what to do next.
+5. If that stored session is still open and reusable, reuse it and do not replace the stored session id.
+6. If that stored session is completed but the local row is still pending, do not create a new session. Return `payment_processing` and wait for webhook reconciliation.
+7. If that stored session is expired, missing, or otherwise unusable, create a fresh Checkout Session and replace the stored session id.
+8. If there is no row, or the row is non-paid and not tied to a reusable pending session, create a fresh Checkout Session and write the pending checkout state.
 
 If no row exists, insert:
 - `email`
@@ -116,7 +126,7 @@ If no row exists, insert:
 - `stripe_checkout_session_id`
 - `vip_checkout_started_at = now()`
 
-If a non-paid row already exists, update only:
+If a non-paid row already exists and a fresh Checkout Session is created, update only:
 - `name`
 - `updated_at`
 - `payment_status = 'pending'`
@@ -124,13 +134,17 @@ If a non-paid row already exists, update only:
 - `stripe_checkout_session_id`
 - `vip_checkout_started_at = now()`
 
+If an existing pending row reuses its still-open Checkout Session, update only:
+- `name`
+- `updated_at`
+- do not replace `stripe_checkout_session_id`
+- do not replace `vip_checkout_started_at`
+- keep `payment_status = 'pending'`
+
 Exact selective-update rule on existing rows:
-- do update `name`
-- do update `updated_at`
-- do update `payment_status` to `pending`
-- do update `stripe_customer_id`
-- do update `stripe_checkout_session_id`
-- do update `vip_checkout_started_at`
+- in all non-paid cases, do update `name` and `updated_at`
+- if a fresh Checkout Session is created, do update `payment_status = 'pending'`, `stripe_customer_id`, `stripe_checkout_session_id`, and `vip_checkout_started_at`
+- if an existing open Checkout Session is being reused, keep `payment_status = 'pending'` but do not replace `stripe_customer_id`, `stripe_checkout_session_id`, or `vip_checkout_started_at`
 - do not update `source`
 - do not update `waitlist_tier`
 - do not update `pdf_fulfillment_status`
@@ -138,24 +152,37 @@ Exact selective-update rule on existing rows:
 - do not update `vip_paid_at`
 - do not update any PDF fulfillment fields
 
+Stale pending row rule:
+- a pending row is stale when its stored Checkout Session is expired, missing, or otherwise unusable in Stripe
+- when that happens, create a fresh Checkout Session
+- replace `stripe_checkout_session_id`
+- replace `stripe_customer_id` if Stripe returns a different customer id
+- replace `vip_checkout_started_at = now()`
+- keep `waitlist_tier = 'free'`
+- keep `payment_status = 'pending'`
+- preserve first-touch `source` and all fulfillment fields
+
 ## Success and cancel return behavior
 
 Success return:
 - Stripe returns the visitor to `/vip/success?session_id={CHECKOUT_SESSION_ID}`
-- the success page is confirmation-only
-- it should say payment completed and the PDF is being emailed shortly
-- it must not assume PDF delivery already finished
+- the success page is a post-checkout acknowledgment, not the source of truth for VIP grant
+- it may say checkout is complete and payment confirmation is in progress
+- it must not claim VIP is granted solely because the browser reached the success page
+- it must not claim the PDF was already sent unless server-side state confirms that
 - it must not rely on client-side state to grant VIP access
 
 Recommended success copy:
-- headline: `You're in VIP.`
-- body: `Your payment went through. We’re emailing your PDF shortly.`
+- headline: `Checkout complete.`
+- body: `We're confirming your payment now. Your PDF will be emailed after confirmation.`
 
 Cancel return:
 - Stripe returns the visitor to `/vip/cancel`
 - show a neutral cancel state
 - let the visitor try again immediately
-- do not downgrade or delete the pending row on cancel return
+- cancel return is read-only and does not mutate database state
+- do not downgrade, delete, or rewrite the pending row on cancel return
+- do not change `waitlist_tier`, `payment_status`, `source`, Stripe ids, `vip_checkout_started_at`, or any fulfillment fields on cancel return
 
 Recommended cancel copy:
 - headline: `Checkout canceled.`
@@ -173,14 +200,27 @@ Recommended already-VIP copy:
 - body: `You already have the VIP waitlist access for this email.`
 
 Pending checkout already exists:
-- if the row has `payment_status = 'pending'` and the existing Stripe Checkout Session is still open, reuse it
+- if the row has `payment_status = 'pending'`, check Stripe before deciding whether to reuse or replace the session
+- if Stripe confirms the existing Checkout Session is still open, reuse it
 - return `200 { "ok": true, "status": "checkout_reused", "checkoutUrl": existingSessionUrl }`
 - do not create a second open Checkout Session for the same normalized email
+- do not replace `stripe_checkout_session_id` or `vip_checkout_started_at` when reusing the same session
 
-Pending checkout exists but session is expired or unusable:
+Pending checkout exists and Stripe says payment already completed:
+- if the stored session is completed but the row still shows `payment_status = 'pending'`, return `200 { "ok": true, "status": "payment_processing" }`
+- do not create a second Checkout Session while webhook reconciliation is still catching up
+
+Recommended payment-processing copy:
+- headline: `Payment still processing.`
+- body: `We're confirming your payment now. Your PDF will be emailed after confirmation.`
+
+Pending checkout exists but session is stale:
 - create a fresh Checkout Session
 - update `stripe_checkout_session_id` and `vip_checkout_started_at`
+- update `stripe_customer_id` if Stripe returns a different customer id
 - keep `waitlist_tier = 'free'`
+- keep `payment_status = 'pending'`
+- preserve first-touch `source` and all fulfillment fields
 
 Existing free row:
 - if the row exists as free, reuse the same row and move only `payment_status` to `pending`

@@ -80,7 +80,9 @@ In v1, `source` is first-touch, not last-touch, so duplicate free signups update
 The free signup endpoint should also have a minimal IP-based rate limit and return `429 rate_limited` on abuse throttling.
 The VIP checkout-start implementation uses a server-side `POST /api/waitlist/vip/checkout` endpoint that creates or reuses a Stripe Checkout Session but does not grant VIP before webhook confirmation.
 At checkout start, a non-paid row moves to `payment_status = 'pending'` and stores the latest `stripe_checkout_session_id`, `stripe_customer_id`, and `vip_checkout_started_at`, while preserving first-touch `source`, granted `waitlist_tier`, and all fulfillment fields.
-If a row is already VIP-paid, v1 should return `already_vip` instead of creating a second checkout session; if a pending session is still open, v1 should reuse it rather than opening another one for the same normalized email.
+If a row is already VIP-paid, v1 should return `already_vip` instead of creating a second checkout session.
+If a row is pending, session reuse is a server-side decision based on current Stripe session state: reuse only if the stored Checkout Session is still open, return `payment_processing` if Stripe shows it completed while the local row is still pending, and create a fresh replacement session only when the stored pending session is stale or unusable.
+The `/vip/cancel` return route is read-only in v1 and must not mutate any database state.
 
 ## Recommended execution sequence
 
