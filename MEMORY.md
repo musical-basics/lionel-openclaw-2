@@ -6,7 +6,7 @@
 
 ## Core Facts (stable, always-loaded)
 
-- User: Lionel, Eastern Time (`America/New_York`), direct-chat human for this workspace
+- User: Lionel Yu (prefers Lionel), Eastern Time (`America/New_York`), direct-chat human for this workspace
 - Active projects: see memory/projects/
 - Active tools: see memory/tools/
 - Key people: see memory/people/
@@ -14,6 +14,7 @@
 ## Atomic File Directory
 
 ### Projects
+- `memory/projects/dreamplay.md` — current DreamPlay product, preorder, and portal context
 - `memory/projects/memory-system-v2.md` — design decision and current structure for the workspace memory system
 - `memory/projects/workspace-bootstrap-playbook.md` — repeatable handoff list of what was done during initial setup
 
@@ -35,6 +36,7 @@
 - 2026-04-17 Promoted the memory-system redesign to `memory/projects/memory-system-v2.md` — strategic workspace decision
 - 2026-04-17 Promoted the embeddings addendum to `memory/tools/embedding-friendly-memory-writing.md` and `AGENTS.md` — retrieval writing rules should be durable and always available
 - 2026-04-17 Added `memory/projects/workspace-bootstrap-playbook.md` — future bots need a durable handoff of the initial setup work
+- 2026-04-17 Promoted fuller Lionel context into `USER.md` and `memory/projects/dreamplay.md` — durable identity, communication, and product facts from the approved handoff
 
 ## Distillation Log
 

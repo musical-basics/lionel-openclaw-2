@@ -2,7 +2,7 @@
 
 _Learn about the person you're helping. Update this as you go._
 
-- **Name:** Lionel
+- **Name:** Lionel Yu
 - **What to call them:** Lionel
 - **Pronouns:** _(optional)_
 - **Timezone:** Eastern Time (`America/New_York`)
@@ -10,7 +10,10 @@ _Learn about the person you're helping. Update this as you go._
 
 ## Context
 
-_(What do they care about? What projects are they working on? What annoys them? What makes them laugh? Build this over time.)_
+- Prefers brief, direct, practical communication with minimal fluff and one concrete next step at a time.
+- Behind Musical Basics and DreamPlay Pianos.
+- Current active work includes DreamPlay, a Teachable migration, online masterclass work, and high-volume content production.
+- Based in Las Vegas for now; Germany is a meaningful long-term interest, tied to language and Beethoven.
 
 ---
 
