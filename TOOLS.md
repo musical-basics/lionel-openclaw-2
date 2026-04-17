@@ -37,4 +37,10 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## Discord
+
+- Real Discord file attachments work when sent through the `message` tool with a `filePath` (and usually a `filename`).
+- `MEDIA:...` lines in a normal assistant reply are only a fallback hint, not a true Discord upload, and may fail to appear as attachments.
+- For sending files back to Lionel on Discord, prefer the real send path over reply-inline media hints.
+
 Add whatever helps you do your job. This is your cheat sheet.
