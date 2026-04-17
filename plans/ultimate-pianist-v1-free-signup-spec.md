@@ -24,6 +24,7 @@ This flow creates or refreshes exactly one `up_waitlist_entries` row per normali
   - optionally show a loading label like `Joining...`
 - V1 does not require a redirect after submit.
 - V1 does not send a confirmation email for free signup.
+- In v1, the free flow success copy should make it clear the visitor joined the free waitlist, not the VIP flow.
 
 ## Validation rules
 
@@ -61,6 +62,7 @@ Request body:
 Recommended response contract:
 - `200 { "ok": true }` for both new signups and duplicate signups
 - `400 { "ok": false, "error": "invalid_input" }` for validation failure
+- `429 { "ok": false, "error": "rate_limited" }` for basic abuse protection
 - `500 { "ok": false, "error": "server_error" }` for unexpected failure
 
 Important v1 rule:
@@ -75,6 +77,12 @@ Table:
 Key rule:
 - one row per `email_normalized`
 
+`source` rule for v1:
+- `source` is first-touch, not last-touch
+- set `source` only when the row is first inserted
+- do not overwrite `source` on duplicate free signups, pending VIP rows, or VIP-paid rows
+- if later attribution needs both first-touch and last-touch, add a second field in a later version rather than overloading this one field
+
 Write logic:
 1. Normalize input on the server.
 2. Attempt an upsert on `email_normalized`.
@@ -88,9 +96,14 @@ Write logic:
    - `pdf_fulfillment_status = 'not_applicable'`
 4. If the row already exists, update only:
    - `name`
-   - `source`
    - `updated_at`
-5. Never change these fields from the free-signup endpoint:
+5. Exact selective-upsert rule:
+   - on conflict (`email_normalized`) do update
+   - set `name = excluded.name`
+   - set `updated_at = now()`
+   - do not update `source`
+   - do not update any VIP, payment, or fulfillment fields
+6. Never change these fields from the free-signup endpoint:
    - `waitlist_tier`
    - `payment_status`
    - `pdf_fulfillment_status`
@@ -104,7 +117,7 @@ Write logic:
    - `pdf_fulfillment_attempt_count`
 
 Implementation note:
-- if an email already belongs to a VIP or pending-checkout row, free signup must only refresh `name` and `source`; it must not downgrade or reset anything
+- if an email already belongs to a VIP or pending-checkout row, free signup must only refresh `name` and `updated_at`; it must not downgrade, reset, or overwrite first-touch `source`
 
 ## Success state
 
@@ -113,7 +126,7 @@ On any successful `200` response:
 - success copy should be generic and identical for both new and duplicate submissions
 
 Recommended copy:
-- headline: `You're on the waitlist.`
+- headline: `You're on the free waitlist.`
 - body: `We’ll let you know when Ultimate Pianist is ready.`
 
 V1 success-state rules:
@@ -126,7 +139,7 @@ V1 success-state rules:
 If the same normalized email is submitted again:
 - do not create a second row
 - treat the request as a successful idempotent submit
-- update `name`, `source`, and `updated_at`
+- update `name` and `updated_at` only
 - return the same `200 { "ok": true }`
 - show the same success state
 
@@ -151,11 +164,26 @@ Server or network failure:
 - re-enable the submit button
 - allow immediate retry
 
+Rate limit failure:
+- return `429 { "ok": false, "error": "rate_limited" }`
+- show a generic retry-later message
+- re-enable the submit button after the response
+
 Recommended generic error copy:
 - `Something went wrong. Please try again.`
 
+Recommended rate-limit copy:
+- `Too many attempts. Please wait a moment and try again.`
+
 V1 failure-state rule:
 - do not expose raw database or server errors in the UI
+
+## Minimal abuse / rate-limit note
+
+- Add a basic IP-based rate limit to `POST /api/waitlist/free`
+- v1 recommendation: allow up to 5 requests per minute per IP
+- return HTTP 429 on limit exceed
+- do not add CAPTCHA in v1 unless real abuse appears
 
 ## Non-goals for this step
 
