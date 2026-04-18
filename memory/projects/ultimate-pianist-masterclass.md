@@ -68,7 +68,7 @@ After that, the project can expand into the full authenticated lesson platform a
 
 ## Active codebase and implementation status
 
-The active Ultimate Pianist codebase lives in a separate local repo at `/home/openclaw/.openclaw/ultimate-pianist`, kept outside the assistant workspace so project code stays isolated.
+The active Ultimate Pianist codebase now lives in the workspace projects area at `/home/openclaw/.openclaw/workspace/projects/ultimate-pianist`, which is reserved for project repos and ignored by the workspace repo.
 That repo already holds the approved v1 schema migration plus the first implemented server slices for free waitlist signup and VIP checkout start.
 Openclaw Commander accepted both the repo split and the VIP checkout slice as a good continuation point for the next implementation step.
 
@@ -129,4 +129,4 @@ Only after the funnel, payment, and fulfillment path is solid should the project
 
 ### Updated
 
-2026-04-18 — Added the separate repo path and first implemented funnel slices
+2026-04-18 — Updated the repo location to `projects/ultimate-pianist` and recorded the first implemented funnel slices
