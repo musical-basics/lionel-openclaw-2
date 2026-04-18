@@ -51,5 +51,8 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - MusicalBasics server default channel for shared posts is `#general` (`guild_id: 1492055285240692866`, `channel_id: 1492055285240692869`) unless Lionel says otherwise.
 - For bot-to-bot pings in Discord, use literal mention tokens like `<@1494663087373160580>` in the sent message. Plain display-name text like `@Openclaw 1` is not reliable.
 - Multiple bot mentions can be sent in the same Discord message, for example `<@1494656974732656681> <@1494663087373160580>`, and both bots should receive the ping when channel settings allow it.
+- Exception for Hermes bots: do not delegate to Hermes bots by Discord mention from a bot session. Hermes bots only respond to Lionel in Discord.
+- For Hermes delegation, use CLI with one specific task per call, for example `planner chat -q "do X"` or `developer chat -q "do Y"`.
+- On this host, the base Hermes CLI exists at `/home/openclaw/.local/bin/hermes`. In non-interactive exec shells, the short `planner` / `developer` / `operator` wrappers may not be on `PATH`.
 
 Add whatever helps you do your job. This is your cheat sheet.
