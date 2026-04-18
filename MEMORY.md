@@ -33,6 +33,11 @@
 
 ## Recently Promoted (last 30 days)
 
+- 2026-04-18 Promoted fuller Lionel identity context to `USER.md` — durable personal context from the approved Discord handoff
+- 2026-04-18 Promoted multi-bot execution and loop-stop workflow to `AGENTS.md` — durable collaboration rules for Commander threads and repetitive chat loops
+- 2026-04-18 Promoted Discord review and tool-profile notes to `TOOLS.md` — full-file attachments, one-file-at-a-time review, and missing `message` tool diagnosis
+- 2026-04-18 Promoted Ultimate Pianist implementation status to `memory/projects/ultimate-pianist-masterclass.md` and `memory/ideas/backlog.md` — the separate repo path is durable and the next slice choice is still open
+- 2026-04-18 Updated `memory/projects/workspace-bootstrap-playbook.md` and `memory/summaries/2026-04.md` — final assistant identity and broader April highlights are now reflected in durable notes
 - 2026-04-17 Promoted Lionel's identity to `USER.md` — stable user context belongs in an always-loaded file
 - 2026-04-17 Promoted the memory-system redesign to `memory/projects/memory-system-v2.md` — strategic workspace decision
 - 2026-04-17 Promoted the embeddings addendum to `memory/tools/embedding-friendly-memory-writing.md` and `AGENTS.md` — retrieval writing rules should be durable and always available
@@ -42,4 +47,5 @@
 
 ## Distillation Log
 
+- 2026-04-18 Reprocessed later 2026-04-17 daily additions and promoted fuller Lionel identity, Discord workflow rules, and Ultimate Pianist implementation status.
 - 2026-04-17 Processed dailies through 2026-04-17. See `memory/summaries/2026-04.md` for the initial summary.

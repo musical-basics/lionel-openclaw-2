@@ -55,12 +55,12 @@ This workspace was bootstrapped on 2026-04-17 for Lionel. The main work complete
 
 - Confirmed Lionel's timezone is Eastern Time (`America/New_York`).
 - Updated `USER.md`, `MEMORY.md`, cron jobs, and supporting notes to use that timezone.
-- Set a provisional assistant identity in `IDENTITY.md`:
-  - Name: Clio
-  - Creature: a careful ghost in the machine
+- Finalized the assistant identity in `IDENTITY.md`:
+  - Name: Ultimate Pianist Bot
+  - Creature: a careful ghost in the machine, with a knack for memory and organization
   - Vibe: warm, direct, quietly opinionated
   - Emoji: 🪶
-- Left `BOOTSTRAP.md` in place because identity confirmation is still open.
+- Left `BOOTSTRAP.md` in place until the remaining bootstrap follow-ups are closed.
 
 ### 4) Cron jobs registered
 
@@ -97,7 +97,7 @@ These jobs already exist. Do not recreate duplicates unless Lionel asks.
 - `AGENTS.md` — operating rules and memory workflow
 - `SOUL.md` — assistant behavior and tone
 - `USER.md` — Lionel's stable context
-- `IDENTITY.md` — current provisional assistant identity
+- `IDENTITY.md` — current assistant identity
 - `MEMORY.md` — pointer index only
 - `memory/projects/memory-system-v2.md` — main memory-system design note
 - `memory/tools/embedding-friendly-memory-writing.md` — retrieval-writing guidance
@@ -106,9 +106,8 @@ These jobs already exist. Do not recreate duplicates unless Lionel asks.
 
 ## Open Follow-Ups
 
-- Confirm whether Lionel wants to keep the provisional identity `Clio`.
 - Confirm whether Lionel wants to keep being addressed as `Lionel` or prefers something else.
-- Delete `BOOTSTRAP.md` only after identity/bootstrap feels complete.
+- Delete `BOOTSTRAP.md` only after bootstrap feels complete.
 
 ## Things To Avoid
 
@@ -136,4 +135,4 @@ These jobs already exist. Do not recreate duplicates unless Lionel asks.
 
 ### Updated
 
-2026-04-17 — Created a handoff playbook for the next bot
+2026-04-18 — Updated with final assistant identity and current bootstrap follow-ups

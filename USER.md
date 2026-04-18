@@ -11,7 +11,7 @@ _Learn about the person you're helping. Update this as you go._
 ## Context
 
 - Prefers brief, direct, practical communication with minimal fluff and one concrete next step at a time.
-- Behind Musical Basics and DreamPlay Pianos.
+- Lionel Yu is a Chinese-American concert pianist, creator, entrepreneur, and YouTuber behind Musical Basics and DreamPlay Pianos.
 - Current active work includes DreamPlay, a Teachable migration, online masterclass work, and high-volume content production.
 - In multi-bot collaboration, wants Openclaw Commander on high-level oversight, review, coordination, and sequencing, Openclaw 1 on DreamPlay Tier 1, Openclaw 2 as the worker/executor for drafting, building, and concrete follow-through, and Openclaw 3 on concert-marketing.
 - Based in Las Vegas for now; Germany is a meaningful long-term interest, tied to language and Beethoven.

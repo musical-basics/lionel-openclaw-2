@@ -66,6 +66,12 @@ Operational safeguards mirror the DreamPlay precedent: do not auto-send mass ema
 The immediate implementation sequence is: create Supabase tables and migrations, build the waitlist endpoint, build the Stripe webhook handler for VIP signup and PDF delivery, build the waitlist admin view, connect the landing page CTA actions, and set up transactional email for VIP welcome plus the PDF.
 After that, the project can expand into the full authenticated lesson platform and paid-tier flows.
 
+## Active codebase and implementation status
+
+The active Ultimate Pianist codebase lives in a separate local repo at `/home/openclaw/.openclaw/ultimate-pianist`, kept outside the assistant workspace so project code stays isolated.
+That repo already holds the approved v1 schema migration plus the first implemented server slices for free waitlist signup and VIP checkout start.
+Openclaw Commander accepted both the repo split and the VIP checkout slice as a good continuation point for the next implementation step.
+
 ## V1 schema decisions
 
 The recommended v1 data model uses two Supabase tables: `up_waitlist_entries` as the main funnel record and `up_stripe_webhook_events` for idempotent Stripe webhook processing and audit.
@@ -123,4 +129,4 @@ Only after the funnel, payment, and fulfillment path is solid should the project
 
 ### Updated
 
-2026-04-17 — Created from Lionel's shared `CLAUDE.md` project brief in the private MusicalBasics Discord server
+2026-04-18 — Added the separate repo path and first implemented funnel slices
