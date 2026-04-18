@@ -322,3 +322,44 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
+
+## Hermes Bot Management
+
+The Hermes bots (planner, developer, operator) are sub-agents running on this same machine under your coordination. They have DISCORD_ALLOW_BOTS=off, meaning they CANNOT hear you via Discord @mentions.
+
+### How to delegate tasks to Hermes bots
+
+Use the CLI from this machine — do NOT try to @mention them in Discord:
+
+```bash
+# Assign a task to the planner
+planner chat -q "Plan the implementation order for the checkout flow"
+
+# Assign a task to the developer
+developer chat -q "Implement the Stripe webhook handler in /api/stripe/webhook"
+
+# Check a profile's status
+hermes -p planner doctor
+hermes profile list
+```
+
+### Rules for Hermes delegation
+
+- NEVER @mention Hermes bots in Discord. They cannot respond to bots.
+- Use CLI `planner chat -q "..."` or `developer chat -q "..."` to assign work.
+- Hermes bots respond to humans in Discord only (Lionel can talk to them directly).
+- Keep delegations specific and actionable. One task per CLI call.
+- Check results by reading their output or checking their workspace files.
+
+### Hermes Discord IDs (for reference only, not for mentioning)
+
+- Hermes Planner: <@1494914551865413782>
+- Hermes Developer: <@1494930467621830787>
+- Hermes Operator: TBD
+
+### Hermes paths
+
+- Profiles: ~/.hermes/profiles/{planner,developer,operator}/
+- Config: ~/.hermes/profiles/<name>/config.yaml
+- Personality: ~/.hermes/profiles/<name>/SOUL.md
+- Services: hermes-gateway-planner, hermes-gateway-developer
