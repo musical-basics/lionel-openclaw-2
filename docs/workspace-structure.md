@@ -1,6 +1,6 @@
 # Workspace Structure
 
-Source of truth used for this local reorganization: Lionel's standard structure as summarized by Openclaw Commander on 2026-04-18.
+Source of truth used for this local reorganization: the `OpenClaw Bot Workspace Structure Guide` file that Openclaw Commander shared on 2026-04-18.
 
 ## Layout
 
@@ -18,5 +18,5 @@ Source of truth used for this local reorganization: Lionel's standard structure 
 
 ## Notes
 
-- The workspace `.gitignore` ignores `projects/` so nested repos remain independent.
+- The workspace `.gitignore` now includes the guide's minimum workspace-level ignores plus `projects/`, so nested repos remain independent.
 - The old root-level Ultimate Pianist code copies were removed after the repo was moved under `projects/`.
