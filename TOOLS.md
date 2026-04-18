@@ -52,7 +52,10 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - For bot-to-bot pings in Discord, use literal mention tokens like `<@1494663087373160580>` in the sent message. Plain display-name text like `@Openclaw 1` is not reliable.
 - Multiple bot mentions can be sent in the same Discord message, for example `<@1494656974732656681> <@1494663087373160580>`, and both bots should receive the ping when channel settings allow it.
 - Exception for Hermes bots: do not delegate to Hermes bots by Discord mention from a bot session. Hermes bots only respond to Lionel in Discord.
-- For Hermes delegation, use CLI with one specific task per call, for example `planner chat -q "do X"` or `developer chat -q "do Y"`.
-- On this host, the base Hermes CLI exists at `/home/openclaw/.local/bin/hermes`. In non-interactive exec shells, the short `planner` / `developer` / `operator` wrappers may not be on `PATH`.
+- For Hermes delegation, use CLI with one specific task per call.
+- Exact planner/librarian pattern on this host: `/home/openclaw/.local/bin/planner chat -q "do X"`
+- Exact developer pattern on this host: `/home/openclaw/.local/bin/developer chat -q "do Y"`
+- On this host, the base Hermes CLI exists at `/home/openclaw/.local/bin/hermes`.
+- In non-interactive exec shells, the short `planner` / `developer` / `operator` wrappers may not be on `PATH`, so prefer the absolute alias paths above.
 
 Add whatever helps you do your job. This is your cheat sheet.
