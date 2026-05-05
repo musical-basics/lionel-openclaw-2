@@ -81,6 +81,8 @@ These jobs already exist. Do not recreate duplicates unless Lionel asks.
 - Set branch name to `main`.
 - Set remote:
   - `origin -> https://github.com/musical-basics/lionel-openclaw-2.git`
+- Before a first commit in a fresh repo, verify repo-local `user.name` and `user.email`; if git reports `Author identity unknown`, set them locally and retry.
+- Before a push, verify the active GitHub credential has write access to the target repo. Authentication alone is not enough, and `403` usually means the account or token lacks repository permission.
 - Pushed `main` successfully to GitHub.
 - No credentials were stored in repo files. Pushes used interactive authentication.
 
@@ -91,6 +93,12 @@ These jobs already exist. Do not recreate duplicates unless Lionel asks.
 - Extended `memory/projects/memory-system-v2.md` with the embeddings addendum.
 - Updated `MEMORY.md` to point to the new tool note.
 - Ran a paraphrased retrieval test and confirmed the new tool note was the top hit.
+
+### 7) Workspace structure alignment
+
+- Aligned the workspace to Lionel's standard layout, with bot system files at root and dedicated `projects/`, `plans/`, `docs/`, `data/`, `deploy/`, and `reports/` directories.
+- Moved active project repos under `projects/` and kept the workspace repo configured to ignore `projects/` so nested repos stay isolated.
+- Cleared the temporary blocker about the structure guide being missing once Commander supplied the guide in-channel and the layout matched it.
 
 ## Current Important Files
 
@@ -135,4 +143,5 @@ These jobs already exist. Do not recreate duplicates unless Lionel asks.
 
 ### Updated
 
-2026-04-18 — Updated with final assistant identity and current bootstrap follow-ups
+2026-04-20 — Added reusable local git identity and GitHub write-access preflight checks
+2026-04-19 — Added the standard workspace layout alignment and guide-confirmed repo placement

@@ -55,7 +55,14 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - For Hermes delegation, use CLI with one specific task per call.
 - Exact planner/librarian pattern on this host: `/home/openclaw/.local/bin/planner chat -q "do X"`
 - Exact developer pattern on this host: `/home/openclaw/.local/bin/developer chat -q "do Y"`
+- For Ultimate Pianist repo work, Claude Code is the preferred developer runtime when available. The current `/home/openclaw/.local/bin/developer` Hermes profile is a temporary fallback until the live developer path is switched.
 - On this host, the base Hermes CLI exists at `/home/openclaw/.local/bin/hermes`.
 - In non-interactive exec shells, the short `planner` / `developer` / `operator` wrappers may not be on `PATH`, so prefer the absolute alias paths above.
+
+## Local repo and Hermes preflight
+
+- In a fresh repo on this host, a first commit may fail with `Author identity unknown`; set repo-local `git config user.name` and `git config user.email` before retrying instead of assuming global git identity is present.
+- Before pushing to GitHub from this environment, confirm the active credential has write access to the specific remote repo. Successful HTTPS authentication can still end in `403` if the token or account lacks repo permission.
+- If `/home/openclaw/.local/bin/developer` fails in exec because the live Hermes profile log path is not writable, mirror the profile into a writable temporary `HERMES_HOME` under the workspace and run Hermes from that writable home for one-shot tasks.
 
 Add whatever helps you do your job. This is your cheat sheet.

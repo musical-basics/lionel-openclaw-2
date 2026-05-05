@@ -68,9 +68,8 @@ After that, the project can expand into the full authenticated lesson platform a
 
 ## Active codebase and implementation status
 
-The active Ultimate Pianist codebase now lives in the workspace projects area at `/home/openclaw/.openclaw/workspace/projects/ultimate-pianist`, which is reserved for project repos and ignored by the workspace repo.
-That repo already holds the approved v1 schema migration plus the first implemented server slices for free waitlist signup and VIP checkout start.
-Openclaw Commander accepted both the repo split and the VIP checkout slice as a good continuation point for the next implementation step.
+The current workspace repo paths, Ultimate Pianist team-role map, and implementation milestone tracking live in `memory/projects/ultimate-pianist-operations.md`.
+This file keeps the durable product brief, business rules, design direction, and approved funnel architecture.
 
 ## V1 schema decisions
 
@@ -124,9 +123,10 @@ Only after the funnel, payment, and fulfillment path is solid should the project
 
 ### Related
 
+- `memory/projects/ultimate-pianist-operations.md` — current workspace repo paths, team-role map, and implementation milestones
 - DreamPlay is the keyboard hardware cross-sell partner and uses keyboard-credit incentives inside this funnel.
 - Lionel is migrating existing teaching content from Teachable into this new system.
 
 ### Updated
 
-2026-04-18 — Updated the repo location to `projects/ultimate-pianist` and recorded the first implemented funnel slices
+2026-04-19 — Split current operations tracking into `memory/projects/ultimate-pianist-operations.md`

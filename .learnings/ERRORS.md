@@ -7,7 +7,7 @@
 
 ## [ERR-20260417-001] Git commit blocked by missing author identity
 
-- Status: resolved
+- Status: promoted
 - Context: Initial workspace commit attempt during bootstrap
 - Error Output:
   ```text
@@ -26,11 +26,11 @@
   fatal: unable to auto-detect email address (got 'openclaw@lionel-openclaw-2.(none)')
   ```
 - Resolution: Configured repo-local `user.name` and `user.email`, then retried the commit successfully.
-- Promoted To: none yet
+- Promoted To: `TOOLS.md`, `memory/projects/workspace-bootstrap-playbook.md`
 
 ## [ERR-20260417-002] GitHub push blocked by GitHub authentication and permission issues
 
-- Status: resolved
+- Status: promoted
 - Context: Lionel asked for the workspace repo to be pushed to `https://github.com/musical-basics/lionel-openclaw-2.git`.
 - Error Output:
   ```text
@@ -40,4 +40,15 @@
   fatal: unable to access 'https://github.com/musical-basics/lionel-openclaw-2.git/': The requested URL returned error: 403
   ```
 - Resolution: Retried with interactive HTTPS auth and a GitHub token that had repository write access, then pushed `main` to `origin` successfully.
-- Promoted To: none
+- Promoted To: `TOOLS.md`, `memory/projects/workspace-bootstrap-playbook.md`
+
+## [ERR-20260418-001] Hermes developer CLI blocked by non-writable live log path
+
+- Status: promoted
+- Context: Running `/home/openclaw/.local/bin/developer` from the Openclaw exec sandbox for one-shot Ultimate Pianist analysis work.
+- Error Output:
+  ```text
+  Observed sandbox failure: /home/openclaw/.hermes/profiles/developer/logs/agent.log was not writable.
+  ```
+- Resolution: Mirror the developer profile into a writable temporary `HERMES_HOME` under the workspace, then run Hermes from that writable home for one-shot CLI work.
+- Promoted To: `TOOLS.md`
